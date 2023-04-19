@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/GameViewFragment">
+
+    <fragment
+        android:id="@+id/GameViewFragment"
+        android:name="com.example.ng_videojoc.fragments.GameViewFragment"
+        tools:layout="@layout/fragment_game_view" >
+
+    </fragment>
+
+</navigation>
