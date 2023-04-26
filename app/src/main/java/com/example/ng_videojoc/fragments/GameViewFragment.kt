@@ -3,6 +3,8 @@ package com.example.ng_videojoc.fragments
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +15,7 @@ import android.widget.RelativeLayout
 import com.example.ng_videojoc.GameView
 import com.example.ng_videojoc.R
 import com.example.ng_videojoc.databinding.FragmentGameViewBinding
+import kotlinx.coroutines.delay
 
 class GameViewFragment : Fragment() {
     lateinit var binding: FragmentGameViewBinding
@@ -32,6 +35,7 @@ class GameViewFragment : Fragment() {
         val display = requireActivity().windowManager.defaultDisplay
         val size = Point()
         display.getSize(size)
+
         gameView = GameView(requireContext(), size)
 
         val game: FrameLayout = FrameLayout(requireContext())
@@ -58,11 +62,21 @@ class GameViewFragment : Fragment() {
 
         return game
     }
+    private val handler = Handler(Looper.getMainLooper())
+    private var canShoot = true
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         fireButton.setOnClickListener {
-            gameView.shot()
+            if (canShoot) {
+                canShoot = false
+                gameView.shot()
+
+                handler.postDelayed({
+                    canShoot = true
+                }, 500)
+            }
         }
     }
 }

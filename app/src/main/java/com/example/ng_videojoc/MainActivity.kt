@@ -10,6 +10,8 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.ng_videojoc.databinding.ActivityMainBinding
 import com.example.ng_videojoc.fragments.GameViewFragment
 
+// https://foozlecc.itch.io/void-main-ship
+
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 

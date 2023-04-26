@@ -1,4 +1,4 @@
-package com.example.ng_videojoc.entities
+package com.example.ng_videojoc.models
 
 import android.content.Context
 import android.graphics.Bitmap

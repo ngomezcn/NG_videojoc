@@ -1,0 +1,6 @@
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:drawable="@drawable/ship_full" android:duration="50"/>
+    <item android:drawable="@drawable/ship_slight_damage" android:duration="50"/>
+    <item android:drawable="@drawable/ship_damaged" android:duration="50"/>
+    <item android:drawable="@drawable/ship_very_damaged" android:duration="50"/>
+</animation-list>
