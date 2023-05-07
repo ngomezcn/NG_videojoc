@@ -19,10 +19,16 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
     var bSpaceship: Bitmap
     var bBurn: Bitmap
     var bEngine: Bitmap
+    var destroyed = false
 
     var bBubble: Bitmap? = null
 
     var oWeapon : Weapon
+    var shipStatusHealth = listOf<Bitmap>(
+        utils.loadBitmap(R.drawable.ship_very_damaged),
+        utils.loadBitmap(R.drawable.ship_damaged),
+        utils.loadBitmap(R.drawable.ship_slight_damage),
+        utils.loadBitmap(R.drawable.ship_full))
 
     var speed = 0
     override var position = PointF()
@@ -65,6 +71,25 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
     fun updatePlayer(enemies : ConcurrentLinkedQueue<Enemy>){
         oWeapon.update(enemies)
 
+        for (i in enemies)
+        {
+            if(i.bullet != null)
+            {
+                if(bitmapsCollide(bSpaceship, position, i.bullet!!.bitmap, i.bullet!!.position)){
+                    health--
+
+                    if(health==0)
+                    {
+                        destroyed = true
+                    } else
+                    {
+                        bSpaceship = shipStatusHealth[health]
+                        i.bullet = null
+                    }
+                }
+            }
+        }
+
         if(position.x > 0 && position.x < screen.x - size.width)
         {
             position.x += speed
@@ -79,7 +104,11 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
                 position.x = screen.x - size.width - 0.01f
             }
         }
+
+
     }
+
+
 
     fun animation()
     {
@@ -106,5 +135,11 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
 
     fun setBubble() {
         bBubble = utils.loadBitmap(R.drawable.bubble01, 5)
+    }
+
+    var health = 4
+    fun checkImpact(enemies : List<Enemy>)
+    {
+
     }
 }

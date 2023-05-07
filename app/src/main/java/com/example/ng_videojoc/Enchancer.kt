@@ -28,7 +28,7 @@ class Enchancer(val bitmap: Bitmap, val screenSize : Point, val name: String) : 
 
     fun update()
     {
-        position.y += 25f
+        position.y += 8f
         position.x += xm
         if (position.x + bitmap.width >= screenSize.x) {
             xm *= -1

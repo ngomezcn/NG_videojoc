@@ -15,13 +15,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentLinkedQueue
 
-
 class GameView(context: Context, private val screenSize: Point) : SurfaceView(context) {
     val utils = Utils(context)
 
     var canvas: Canvas = Canvas()
     //var backgroundImage: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.background_1)
     var backgroundImage: Bitmap
+    val viewModel by viewModels<ViewModel>()
 
     var shotAction = false
     val dest = Rect(0,0, screenSize.x, screenSize.y)
@@ -45,11 +45,11 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
         //animationBa()
         enemies = ConcurrentLinkedQueue()
 
-        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship1, 4), 50f))
-        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 250f))
-        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 450f))
-        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship6, 3), 750f))
-        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 1000f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship1, 4), utils.loadBitmap(R.drawable.bola01),50f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), utils.loadBitmap(R.drawable.bola01),250f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), utils.loadBitmap(R.drawable.bola01),450f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship6, 3), utils.loadBitmap(R.drawable.bola01),750f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), utils.loadBitmap(R.drawable.bola01),1000f))
 
         player = Player(context, screenSize)
         //backgroundImage = loadBitmap(R.drawable.background_1)
@@ -80,6 +80,11 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
                 draw()
                 update()
                 delay(10)
+
+                if(player.destroyed)
+                {
+                    break
+                }
             }
         }
     }
@@ -87,40 +92,6 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
     lateinit var indexs : MutableList<Float>
     var colum = 0
     var row = 0
-
-    fun animationBa()
-    {
-        indexs = mutableListOf()
-        colum = 1
-        row = 3
-
-        for (i in 0 until row)
-        {
-            if(i == 0)
-            {
-                indexs.add(0F)
-            } else
-            {
-                indexs.add((testB.width * i).toFloat())
-            }
-        }
-
-        CoroutineScope(Dispatchers.IO).launch {
-            while (true)
-            {
-                delay(1)
-                for (i in 0 until row)
-                {
-                    indexs[i] += 0.5f
-
-                    if(indexs[i] > screenSize.y)
-                    {
-                        indexs[i] = -1F * testB.width
-                    }
-                }
-            }
-        }
-    }
 
     fun draw()
     {
@@ -141,10 +112,8 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
 
             for(i in enemies)
             {
-                if(i.alive)
-                {
-                    canvas.drawBitmap(i.bitmap, i.position.x, i.position.y, null)
-                }
+                i.draw(canvas)
+
             }
 
             player.draw(canvas)
@@ -163,6 +132,7 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
 
     fun update(){
         //enemy.updateEnemy()
+
         enchancerGenerator.update(player)
         player.updatePlayer(enemies)
         if(bullets.size != 0) {
