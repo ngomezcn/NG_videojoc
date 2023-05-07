@@ -3,20 +3,40 @@ package com.example.ng_videojoc.models
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
+import android.graphics.PointF
 import com.example.ng_videojoc.R
+import java.util.Random
 
-class Enemy(context: Context, screenX: Int, screenY: Int) {
-    var bitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.spaceship)
-    val width = screenX / 10f
-    val height = screenY / 10f
-    var positionX = screenX / 2
+class Enemy(val context: Context, val screen: Point, val bitmap : Bitmap, val vertical : Float) {
     var speed = 0
+    val utils = Utils(context)
+    var position = PointF()
+    var alive = true
+    val random = Random()
+
+    var xm = 0f
 
     init{
-        bitmap = Bitmap.createScaledBitmap(bitmap, width.toInt(), height.toInt(),false)
+        position.x = (screen.x/2).toFloat()
+        position.y = vertical
+
+        xm = 5f + random.nextFloat() * (15f - 5f)
+
+        if(random.nextBoolean())
+        {
+            xm *= -1f
+        }
     }
 
-    fun updateEnemy(){
-        positionX += speed
+    fun update(){
+        position.x += xm
+        if (position.x + bitmap.width >= screen.x) {
+            xm *= -1
+        }
+        if (position.x <= 0.0f) {
+            xm *= -1
+        }
+        val rand = (0..50).random().toLong()
     }
 }

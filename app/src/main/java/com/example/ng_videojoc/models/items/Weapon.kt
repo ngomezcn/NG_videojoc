@@ -1,24 +1,31 @@
 package com.example.ng_videojoc.models.items
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Point
 import android.graphics.PointF
 import com.example.ng_videojoc.models.Bullet
+import com.example.ng_videojoc.models.Enemy
 import com.example.ng_videojoc.models.base.GameEntity
+import com.example.ng_videojoc.models.bitmapsCollide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class Weapon(
     var bitmap: Bitmap,
     val weaponAnimation: List<Pair<Bitmap, Long>>,
     val bBullet: Bitmap,
-    val bulletsConfig: List<Pair<Point, MutableList<Bullet>>>,
-    val bulletAnim: List<Pair<Bitmap, Long>>
+    val bulletBuffers: List<Pair<Pair<PointF, Int>, MutableList<Bullet>>>,
+    val bulletAnim: List<Pair<Bitmap, Long>>,
+    var bulletSpeed: Float
 ) : GameEntity()
 {
+
+    init {
+        bitmap = weaponAnimation[0].first
+    }
+
     fun anim()
     {
         CoroutineScope(Dispatchers.IO).launch {
@@ -28,22 +35,34 @@ class Weapon(
             }
         }
     }
-
     fun shot(playerPosition : PointF)
     {
         CoroutineScope(Dispatchers.IO).launch {
-            anim()
-
-            for(bc in bulletsConfig)
+            for(bulletBuffer in bulletBuffers)
             {
-                val bullet = Bullet(bBullet, bc.first.x, bc.first.y-30f, bulletAnim)
-                bc.second.add(bullet)
+                delay(bulletBuffer.first.second.toLong())
+                val bullet = Bullet(bBullet, playerPosition, bulletBuffer.first.first, bulletAnim, bulletSpeed);
+                bulletBuffer.second.add(bullet)
             }
         }
+
+        anim()
     }
 
-    override fun draw(canvas : Canvas)
+    fun update(enemies: ConcurrentLinkedQueue<Enemy>)
     {
-
+        for(bulletBuffer in bulletBuffers)
+        {
+            for(a in bulletBuffer.second) {
+                a.update()
+                enemies.forEachIndexed { i, it ->
+                    if(bitmapsCollide(it.bitmap, it.position, a.bitmap, a.position, 200))
+                    {
+                        enemies.remove(it)
+                        bulletBuffer.second.remove(a)
+                    }
+                }
+            }
+        }
     }
 }

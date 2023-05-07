@@ -6,11 +6,11 @@
       <GradleProjectSettings>
         <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
-        <option name="externalProjectPath" value="/dades/NGOMEZ/M09_/Videojoc" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="/dades/NGOMEZ/M09_/Videojoc" />
-            <option value="/dades/NGOMEZ/M09_/Videojoc/app" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
       </GradleProjectSettings>

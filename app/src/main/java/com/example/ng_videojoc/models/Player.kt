@@ -11,6 +11,7 @@ import com.example.ng_videojoc.WeaponFactory
 import com.example.ng_videojoc.models.base.GameEntity
 import com.example.ng_videojoc.models.items.Weapon
 import kotlinx.coroutines.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class Player(val context: Context, val screen: Point) : GameEntity() {
     val utils = Utils(context)
@@ -19,10 +20,12 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
     var bBurn: Bitmap
     var bEngine: Bitmap
 
+    var bBubble: Bitmap? = null
+
     var oWeapon : Weapon
 
     var speed = 0
-    override val position = PointF()
+    override var position = PointF()
     override var size: SizeF = SizeF((screen.x / 10f) * 2f, (screen.x / 10f) * 2f)
 
     init{
@@ -31,35 +34,37 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
         bEngine = utils.loadBitmap(R.drawable.baseengine)
 
         position.x = screen.x / 2f
+        position.y = screen.y-800f
 
-        val weaponFactory = WeaponFactory(context, utils, screen)
+        val weaponFactory = WeaponFactory(context, utils, screen, position)
         oWeapon = weaponFactory.getAutoCannon()
 
         animation()
     }
 
     override fun draw(canvas: Canvas) {
-        canvas.drawBitmap(bBurn, position.x, screen.y-800f, null)
-        canvas.drawBitmap(oWeapon.bitmap, position.x, screen.y-800f, null)
+        canvas.drawBitmap(bBurn, position.x, position.y, null)
+        canvas.drawBitmap(oWeapon.bitmap, position.x, position.y, null)
 
-        for(bc in oWeapon.bulletsConfig)
-        {
-            for (i in  bc.second)
-            {
-                canvas.drawBitmap(i.bitmap, i.positionX-10, i.positionY, null)
-            }
+        canvas.drawBitmap(bEngine, position.x, position.y, null)
+        canvas.drawBitmap(bSpaceship, position.x, position.y, null)
+
+        if(bBubble != null){
+            canvas.drawBitmap(bBubble!!, position.x+10f, position.y+10, null)
         }
 
-        //for (bullet in bullets)
-        //     canvas.drawBitmap(bullet.bitmap, bullet.positionX-10, bullet.positionY, null)
-        //for (bullet in bullets2)
-        //    canvas.drawBitmap(bullet.bitmap, bullet.positionX+120, bullet.positionY, null)
-        canvas.drawBitmap(bEngine, position.x, screen.y-800f, null)
-        canvas.drawBitmap(bSpaceship, position.x, screen.y-800f, null)
-        // canvas.drawBitmap(player.shield, player.positionX, size.y-800f, null)
+        for(bulletBuffer in oWeapon.bulletBuffers)
+        {
+            for (bullet in  bulletBuffer.second)  // Buffer de balas disparadas
+            {
+                canvas.drawBitmap(bullet.bitmap, bullet.position.x, bullet.position.y, null)
+            }
+        }
     }
 
-    fun updatePlayer(){
+    fun updatePlayer(enemies : ConcurrentLinkedQueue<Enemy>){
+        oWeapon.update(enemies)
+
         if(position.x > 0 && position.x < screen.x - size.width)
         {
             position.x += speed
@@ -74,7 +79,6 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
                 position.x = screen.x - size.width - 0.01f
             }
         }
-
     }
 
     fun animation()
@@ -100,5 +104,7 @@ class Player(val context: Context, val screen: Point) : GameEntity() {
         oWeapon.shot(position)
     }
 
-
+    fun setBubble() {
+        bBubble = utils.loadBitmap(R.drawable.bubble01, 5)
+    }
 }

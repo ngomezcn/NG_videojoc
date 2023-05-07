@@ -71,11 +71,15 @@ class GameViewFragment : Fragment() {
         fireButton.setOnClickListener {
             if (canShoot) {
                 canShoot = false
+
+                fireButton.setBackgroundColor(Color.BLACK)
                 gameView.shot()
 
                 handler.postDelayed({
+                    fireButton.setBackgroundColor(Color.RED)
+
                     canShoot = true
-                }, 500)
+                }, 2000)
             }
         }
     }

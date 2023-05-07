@@ -6,12 +6,14 @@ import android.graphics.*
 import android.view.MotionEvent
 import android.view.SurfaceView
 import com.example.ng_videojoc.models.Bullet
+import com.example.ng_videojoc.models.Enemy
 import com.example.ng_videojoc.models.Player
 import com.example.ng_videojoc.models.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentLinkedQueue
 
 
 class GameView(context: Context, private val screenSize: Point) : SurfaceView(context) {
@@ -31,17 +33,23 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
     var playing = true
     var score = 0
 
-    lateinit var player : Player
+    var enchancerGenerator : EnchancerGenerator
 
-    fun animBack()
-    {
-        val a = listOf(R.drawable.engine_idle_01, R.drawable.engine_idle_02, R.drawable.engine_idle_03)
-    }
+    lateinit var player : Player
 
     var testB: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.background_1)
 
+    lateinit var enemies : ConcurrentLinkedQueue<Enemy>
+
     init {
         //animationBa()
+        enemies = ConcurrentLinkedQueue()
+
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship1, 4), 50f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 250f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 450f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship6, 3), 750f))
+        enemies.add(Enemy(context, screenSize, utils.loadBitmap(R.drawable.ship3, 3), 1000f))
 
         player = Player(context, screenSize)
         //backgroundImage = loadBitmap(R.drawable.background_1)
@@ -60,6 +68,9 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
             matrix,
             true
         )
+        enchancerGenerator = EnchancerGenerator(context, screenSize)
+
+
         startGame()
     }
 
@@ -126,13 +137,23 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
                 }
             }
 
+            enchancerGenerator.draw(canvas)
+
+            for(i in enemies)
+            {
+                if(i.alive)
+                {
+                    canvas.drawBitmap(i.bitmap, i.position.x, i.position.y, null)
+                }
+            }
+
             player.draw(canvas)
 
             //SCORE
             paint.color = Color.YELLOW
             paint.textSize = 60f
             paint.textAlign = Paint.Align.RIGHT
-            //canvas.drawText("Score: $score", (size.x - paint.descent()), 75f, paint)
+            canvas.drawText("Score: $score", (screenSize.x - paint.descent()), 75f, paint)
 
             //ENEMY
             //canvas.drawBitmap(enemy.bitmap, enemy.positionX.toFloat(),0f, paint)
@@ -142,18 +163,23 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
 
     fun update(){
         //enemy.updateEnemy()
-        player.updatePlayer()
+        enchancerGenerator.update(player)
+        player.updatePlayer(enemies)
         if(bullets.size != 0) {
             for (bullet in bullets)
             {
-                bullet.updateBullet()
+                bullet.update()
             }
             for (bullet in bullets2)
             {
-                bullet.updateBullet()
+                bullet.update()
             }
             //bullet.speed = 20
             //shot.updateShot()
+        }
+        for(i in enemies)
+        {
+            i.update()
         }
     }
 
@@ -188,14 +214,16 @@ class GameView(context: Context, private val screenSize: Point) : SurfaceView(co
             when(event.action){
                 MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                     // Modifiquem la velocitat del jugador perquè es mogui?
-                    if(event.x>player.position.x){
+
+                    player.position.x = event.x-180
+                    /*if(event.x>player.playerPosition.x){
                         player.speed = 10
-                    } else if (event.x < player.position.x)
+                    } else if (event.x < player.playerPosition.x)
                     {
                         player.speed = -10
                     } else
                     {
-                    }
+                    }*/
                 }
                 MotionEvent.ACTION_UP -> {
                     player.speed = 0

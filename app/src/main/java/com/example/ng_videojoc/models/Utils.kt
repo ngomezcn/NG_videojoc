@@ -4,6 +4,29 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.PointF
+import android.graphics.RectF
+
+fun bitmapsCollide(
+    playerBitmap: Bitmap, playerPosition: PointF,
+    bulletBitmap: Bitmap, bulletPosition: PointF, const : Int = 120): Boolean {
+
+    val playerRect = RectF(
+        playerPosition.x,
+        playerPosition.y,
+        playerPosition.x + (playerBitmap.width-const),
+        playerPosition.y + (playerBitmap.height-const)
+    )
+
+    val bulletRect = RectF(
+        bulletPosition.x,
+        bulletPosition.y,
+        bulletPosition.x + (bulletBitmap.width-const),
+        bulletPosition.y + (bulletBitmap.height-const)
+    )
+
+    return playerRect.intersect(bulletRect)
+}
 
 class Utils(val context: Context) {
 
