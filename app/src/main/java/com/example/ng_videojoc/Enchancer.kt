@@ -10,10 +10,11 @@ import kotlinx.coroutines.delay
 import java.lang.reflect.Type
 import java.util.Random
 
-class Enchancer(val bitmap: Bitmap, val screenSize : Point, val name: String) : GameEntity(){
+class Enchancer(val bitmap: Bitmap, val screenSize : Point, val name: String, var status : Boolean = true) : GameEntity(){
     override var position = PointF()
 
-    var xm = 15f
+    var xm : Float = (15f + Math.random() * (25f - 15f)).toFloat();
+
 
     init {
         position.x = (screenSize.x/2).toFloat()

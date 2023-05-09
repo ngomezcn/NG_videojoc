@@ -45,7 +45,6 @@ class Utils(val context: Context) {
         myOptions.inDither = false
         myOptions.inPurgeable = true
 
-
         val b = getBitmapFromDrawable(context.resources, drawable, options = myOptions )
         return Bitmap.createScaledBitmap(b, b.width*7, b.height*7,true)
     }
@@ -58,7 +57,6 @@ class Utils(val context: Context) {
         myOptions.inPreferredConfig = Bitmap.Config.ARGB_8888
         myOptions.inDither = false
         myOptions.inPurgeable = true
-
 
         val b = getBitmapFromDrawable(context.resources, drawable, options = myOptions )
         return Bitmap.createScaledBitmap(b, b.width*multiplier, b.height*multiplier,true)

@@ -56,7 +56,7 @@ class Weapon(
             for(a in bulletBuffer.second) {
                 a.update()
                 enemies.forEachIndexed { i, it ->
-                    if(bitmapsCollide(it.bitmap, it.position, a.bitmap, a.position, 200))
+                    if(bitmapsCollide(it.bitmap, it.position, a.bitmap, a.position, 145))
                     {
                         enemies.remove(it)
                         bulletBuffer.second.remove(a)

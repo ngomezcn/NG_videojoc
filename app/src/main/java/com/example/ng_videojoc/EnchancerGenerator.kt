@@ -14,15 +14,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class EnchancerGenerator(context: Context, screenSize: Point) {
+class EnchancerGenerator(val context: Context, val screenSize: Point) {
     val utils = Utils(context)
 
-    val enchanceList = mutableListOf<Enchancer>()
+    private val enchanceList = mutableListOf<Enchancer>()
 
     val bubble = Enchancer(utils.loadBitmap(R.drawable.bubble01, 4), screenSize, "bubble")
 
     init {
-        enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.bubble01, 4), screenSize, "bubble"))
+       // enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.zapper_01, 4), screenSize, "zapper"))
+        //enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.bubble01, 4), screenSize, "bubble"))
+        //enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.hearthsized, 4), screenSize, "health"))
         launchEmitter()
     }
 
@@ -36,21 +38,43 @@ class EnchancerGenerator(context: Context, screenSize: Point) {
     {
         for (i in enchanceList)
         {
-            canvas.drawBitmap(i.bitmap, i.position.x, i.position.y, null)
+            if(i.status)
+            {
+                canvas.drawBitmap(i.bitmap, i.position.x, i.position.y, null)
+            }
         }
+    }
+
+    fun shouldGenerate(): Boolean {
+        val numeroAleatorio = (0..1000).random()
+        //return numeroAleatorio <= 6
+        return numeroAleatorio <= 3
     }
 
     fun update(player : Player)
     {
+        if(shouldGenerate())
+        {
+            when((1..3).random())
+            {
+                1 -> enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.zapper_01, 4), screenSize, "zapper"))
+                2 -> enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.bubble01, 4), screenSize, "bubble"))
+                3 -> enchanceList.add(Enchancer(utils.loadBitmap(R.drawable.hearthsized, 4), screenSize, "health"))
+            }
+        }
+
         for (i in enchanceList)
         {
-            if(bitmapsCollide(player.bSpaceship, player.position, i.bitmap, i.position)){
+            if(i.status && bitmapsCollide(player.bSpaceship, player.position, i.bitmap, i.position)){
+                i.status = false
                 when (i.name) {
                     "bubble" -> player.setBubble()
-                    "zapper" -> print("x == 1")
-                    "health" -> print("x == 1")
+                    "zapper" -> {
+                        player.setWeaponZapper()
+                    }
+                    "health" -> player.heal()
+                    else -> {}
                 }
-                enchanceList.remove(i)
             }
             i.update()
         }

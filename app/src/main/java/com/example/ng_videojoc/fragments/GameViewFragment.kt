@@ -12,8 +12,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
+import androidx.fragment.app.viewModels
 import com.example.ng_videojoc.GameView
 import com.example.ng_videojoc.R
+import com.example.ng_videojoc.ViewModel
 import com.example.ng_videojoc.databinding.FragmentGameViewBinding
 import kotlinx.coroutines.delay
 
